@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채우미 블로그 프로그램 컬렉션</title>
+    <style>
+        :root {
+            /* 프리미엄 컬러 팔레트 */
+            --bg-main: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            
+            --accent-gold: linear-gradient(135deg, #d4af37, #fce38a, #d4af37);
+            --accent-navy: #0f172a;
+            --accent-free: linear-gradient(135deg, #ff4d4d, #f9cb28);
+            --accent-premium: linear-gradient(135deg, #334155, #94a3b8);
+            
+            --card-bg: #ffffff;
+            --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            --card-hover-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 보안: 텍스트 드래그 금지 */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 60px 20px;
+            line-height: 1.6;
+        }
+
+        header { text-align: center; margin-bottom: 80px; }
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--accent-navy), #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        /* 방장에게 문의 플로팅 로고 버튼 */
+        .contact-admin-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 1000;
+            background: var(--accent-navy);
+            color: white;
+            padding: 15px 28px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #fbbf24;
+        }
+        .contact-admin-btn:hover { 
+            transform: scale(1.1) translateY(-5px); 
+            box-shadow: 0 15px 40px rgba(15, 23, 42, 0.4); 
+        }
+        .contact-admin-btn::before { content: '💬'; font-size: 1.2rem; }
+
+        /* 섹션 헤더 및 가이드 문구 */
+        .section-header {
+            max-width: 1200px;
+            margin: 60px auto 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-navy);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .section-title::after { content: ''; flex-grow: 1; height: 1px; background: linear-gradient(to right, #e2e8f0, transparent); margin-left: 20px; }
+
+        .section-guide {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            padding-left: 42px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 70px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 35px;
+        }
+
+        /* 카드 디자인 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            color: inherit;
+            border: 1px solid rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        .card:not(.pending):hover { transform: translateY(-10px); box-shadow: var(--card-hover-shadow); }
+
+        .card-image-wrapper { height: 180px; overflow: hidden; position: relative; }
+        .card-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .card:not(.pending):hover .card-image { transform: scale(1.08); }
+
+        .card-content { padding: 24px; flex-grow: 1; }
+        .card-title { font-size: 1.25rem; font-weight: 800; margin: 12px 0 8px 0; color: var(--accent-navy); }
+        .card-description { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+        .badge-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .badge { padding: 5px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+        .logo-free { background: var(--accent-free); color: white; }
+        .logo-allinone { background: var(--accent-gold); color: #3f2e00; }
+        .logo-monthly { background: var(--accent-premium); color: white; }
+        .badge-gray { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        
+        /* 업데이트 예정 카드 */
+        .pending { opacity: 0.7; filter: grayscale(40%); cursor: default; }
+        .pending-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.5); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; letter-spacing: 2px; font-size: 0.9rem;
+            backdrop-filter: blur(2px);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+
+<a href="https://open.kakao.com/o/sO9dw7Ug" class="contact-admin-btn" target="_blank">
+    방장에게 문의
+</a>
+
+<header>
+    <h1>채우미 블로그 프로그램 컬렉션</h1>
+    <p>블로그 자동화 및 운영 효율화를 위한 프리미엄 솔루션 대시보드</p>
+</header>
+
+<div class="section-header">
+    <div class="section-title">✨ 100% 무료 프로그램</div>
+    <div class="section-guide">무료 카테고리는 100%무료로 사용할수있는 프로그램입니다.</div>
+</div>
+<div class="container">
+    <a href="https://park-jin-soo.github.io/image_wash/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/wash/600/400" alt="Image Wash" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-free">100% 무료</span><span class="badge badge-gray">SEO 최적화</span></div>
+            <h2 class="card-title">이미지 액자 자동 삽입</h2>
+            <p class="card-description">유사 이미지 문제를 해결하고 검색 노출 점수를 높여주는 필수 도구입니다.</p>
+        </div>
+    </a>
+    <a href="https://park-jin-soo.github.io/pumasi_crawling/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/pumasi/600/400" alt="Pumasi" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-free">100% 무료</span><span class="badge badge-gray">소통방 전용</span></div>
+            <h2 class="card-title">소통방 링크 수집기</h2>
+            <p class="card-description">단톡방 회원들의 포스팅 링크를 수집하여 품앗이용 파일을 즉시 생성합니다.</p>
+        </div>
+    </a>
+</div>
+
+<div class="section-header">
+    <div class="section-title">💎 올인원 월 구독 서비스</div>
+    <div class="section-guide">올인원 구독이란 올인원 마크가 있는 프로그램은 올인원 월구독 으로 모두 사용할수 있습니다.</div>
+</div>
+<div class="container">
+    <a href="https://park-jin-soo.github.io/silver50_70/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/senior/600/400" alt="Senior" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">🎨 시니어 타겟</span></div>
+            <h2 class="card-title">시니어 공감 원고 생성기</h2>
+            <p class="card-description">5070 세대의 깊은 공감을 얻는 감성 콘텐츠로 충성 이웃을 확보하세요.</p>
+        </div>
+    </a>
+    <a href="https://park-jin-soo.github.io/food_smartphone_posting/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/food/600/400" alt="Food" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">맛집 리뷰</span></div>
+            <h2 class="card-title">체험단 맛집 원고 생성기</h2>
+            <p class="card-description">현장에서 스마트폰으로 즉시 고품질 원고를 완성합니다.</p>
+        </div>
+    </a>
+    <a href="https://park-jin-soo.github.io/food_smartphone/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/trend/600/400" alt="Trend" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">🔥 실시간 트렌드</span></div>
+            <h2 class="card-title">트렌드 키워드 생성기</h2>
+            <p class="card-description">실시간 이슈를 빠르게 원고화하여 애드포스트 수익을 극대화합니다.</p>
+        </div>
+    </a>
+
+    <div class="card pending">
+        <div class="card-image-wrapper">
+            <img src="https://picsum.photos/seed/ikea-p/600/400" class="card-image">
+            <div class="pending-overlay">UPDATE SOON</div>
+        </div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span></div>
+            <h2 class="card-title">이케아 전용 원고 생성기</h2>
+            <p class="card-description">이케아 제품 리뷰 및 인테리어 정보 최적화 생성 도구.</p>
+        </div>
+    </div>
+    <div class="card pending">
+        <div class="card-image-wrapper">
+            <img src="https://picsum.photos/seed/daiso-p/600/400" class="card-image">
+            <div class="pending-overlay">UPDATE SOON</div>
+        </div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span></div>
+            <h2 class="card-title">다이소 전용 원고 생성기</h2>
+            <p class="card-description">가성비 다이소 꿀템 리뷰 전문 원고 생성 도구.</p>
+        </div>
+    </div>
+    <div class="card pending">
+        <div class="card-image-wrapper">
+            <img src="https://picsum.photos/seed/sports-p/600/400" class="card-image">
+            <div class="pending-overlay">UPDATE SOON</div>
+        </div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span></div>
+            <h2 class="card-title">스포츠 뉴스 기사 생성기</h2>
+            <p class="card-description">실시간 스포츠 경기 분석 및 이슈 원고 자동 제작.</p>
+        </div>
+    </div>
+    <div class="card pending">
+        <div class="card-image-wrapper">
+            <img src="https://picsum.photos/seed/travel-p/600/400" class="card-image">
+            <div class="pending-overlay">UPDATE SOON</div>
+        </div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span></div>
+            <h2 class="card-title">여행/축제 뉴스 생성기</h2>
+            <p class="card-description">전국 축제 정보 및 여행 코스 전문 원고 생성기.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section-header">
+    <div class="section-title">📅 일반 월 구독 프로그램</div>
+    <div class="section-guide">월구독 카테고리는 각 프로그램마다 월구독을 해야하는 상품입니다.</div>
+</div>
+<div class="container">
+    <div class="card" onclick="showContactAlert()">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/network/600/400" alt="Pumasi" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group">
+                <span class="badge logo-monthly">계정별 월 20,000원</span>
+                <span class="badge badge-gray">🚀 소통 자동화</span>
+            </div>
+            <h2 class="card-title">프리미엄 유료 품앗이</h2>
+            <p class="card-description">스크랩, 댓글, 공감, 체류까지 원스톱 해결. 인기도 점수 상향에 최적화된 마케팅 툴입니다.</p>
+        </div>
+    </div>
+    <div class="card pending">
+        <div class="card-image-wrapper">
+            <img src="https://picsum.photos/seed/cart-p/600/400" class="card-image">
+            <div class="pending-overlay">UPDATE SOON</div>
+        </div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge logo-monthly">월 구독</span></div>
+            <h2 class="card-title">쇼핑커넥트 원고생성/발행</h2>
+            <p class="card-description">쇼핑커넥터 기반 자동 원고 발행 시스템 업데이트 예정.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 보안 기능: 우측 마우스 및 개발자 도구 차단
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || 
+           (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
+           (e.ctrlKey && e.keyCode == 85)) { 
+            return false;
+        }
+    };
+
+    function showContactAlert() {
+        alert("이 프로그램은 '방장에게 별도 문의'가 필요한 서비스입니다.\n우측 하단의 문의 버튼을 통해 상세 안내를 받으시기 바랍니다.");
+    }
+</script>
+
+</body>
+</html>
