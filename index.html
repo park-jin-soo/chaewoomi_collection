@@ -21,6 +21,10 @@
             --card-hover-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
         }
 
+        * , *::before, *::after {
+            box-sizing: border-box;
+        }
+
         /* 보안: 텍스트 드래그 금지 */
         body {
             -webkit-user-select: none;
@@ -32,7 +36,7 @@
             color: var(--text-primary);
             margin: 0;
             padding: 60px 20px;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         header { text-align: center; margin-bottom: 80px; }
@@ -44,6 +48,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             display: inline-block;
+            line-height: 1.2;
         }
 
         /* 방장에게 문의 플로팅 로고 버튼 */
@@ -126,7 +131,7 @@
 
         .card-content { padding: 24px; flex-grow: 1; }
         .card-title { font-size: 1.25rem; font-weight: 800; margin: 12px 0 8px 0; color: var(--accent-navy); }
-        .card-description { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+        .card-description { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; word-break: keep-all; }
 
         .badge-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .badge { padding: 5px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
@@ -199,6 +204,72 @@
         }
         #authMsg.error { color: #ef5350; }
         #authMsg.success { color: #22c55e; }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            body {
+                padding: 24px 14px 32px 14px;
+                line-height: 1.9;
+            }
+            header {
+                margin-bottom: 40px;
+            }
+            header h1 {
+                font-size: 2.1rem;
+            }
+            .section-header {
+                margin: 32px auto 18px;
+            }
+            .section-title {
+                font-size: 1.25rem;
+            }
+            .section-guide {
+                padding-left: 0;
+                font-size: 0.9rem;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0 auto 32px;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 18px;
+            }
+            .card {
+                border-radius: 18px;
+                width: 100%;
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            .card-image-wrapper {
+                height: 150px;
+            }
+            .card-title {
+                font-size: 1.15rem;
+            }
+            .card-description {
+                font-size: 0.9rem;
+            }
+            .contact-admin-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+            #allinoneLogin {
+                margin: 24px auto 6px auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .section-title {
+                font-size: 1.15rem;
+            }
+            .login-box h2 {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
@@ -208,7 +279,11 @@
 </a>
 
 <header>
-    <h1>채우미 블로그 프로그램 컬렉션</h1>
+    <h1>
+        채우미<br>
+        블로그 프로그램<br>
+        컬렉션
+    </h1>
     <p>블로그 자동화 및 운영 효율화를 위한 프리미엄 솔루션 대시보드</p>
 </header>
 
