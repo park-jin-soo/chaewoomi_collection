@@ -204,6 +204,47 @@
         }
         #authMsg.error { color: #ef5350; }
         #authMsg.success { color: #22c55e; }
+        
+        /* 인증 모달 스타일 */
+        #authModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        #authModal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            border: none;
+            background: none;
+            font-weight: bold;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
 
         /* 모바일 최적화 */
         @media (max-width: 768px) {
@@ -269,6 +310,13 @@
             .login-box h2 {
                 font-size: 1.2rem;
             }
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+            .modal-content h2 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -331,21 +379,10 @@
     <div class="section-guide">올인원 구독이란 올인원 마크가 있는 프로그램은 올인원 월구독 으로 모두 사용할수 있습니다.</div>
 </div>
 
-<!-- 올인원 진입용 로그인 박스 -->
-<div id="allinoneLogin">
-    <div class="login-box">
-        <h2>올인원 구독 아이디 인증</h2>
-        <p>관리자로부터 발급받은 아이디를 입력해야 올인원 구독 서비스에 접속할 수 있습니다.</p>
-        <input type="text" id="authUserId" placeholder="사용자 ID 입력" onkeypress="if(event.keyCode==13) checkAllinoneLicense()">
-        <button class="btn-login" id="btnLogin" onclick="checkAllinoneLicense()">올인원 카테고리 열기</button>
-        <p id="authMsg"></p>
-    </div>
-</div>
-
-<!-- 인증 후에만 보여질 올인원 카테고리 -->
-<div id="allinoneSection" style="display:none;">
+<!-- 올인원 카테고리 (처음부터 보임) -->
+<div id="allinoneSection">
 <div class="container">
-    <a href="https://park-jin-soo.github.io/silver50_70/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/silver50_70/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/silver50_70/">
         <div class="card-image-wrapper"><img src="https://picsum.photos/seed/senior/600/400" alt="Senior" class="card-image"></div>
         <div class="card-content">
             <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">🎨 시니어 타겟</span></div>
@@ -353,7 +390,7 @@
             <p class="card-description">5070 세대의 깊은 공감을 얻는 감성 콘텐츠로 충성 이웃을 확보하세요.</p>
         </div>
     </a>
-    <a href="https://park-jin-soo.github.io/food_smartphone_posting/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/food_smartphone_posting/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/food_smartphone_posting/">
         <div class="card-image-wrapper"><img src="https://picsum.photos/seed/food/600/400" alt="Food" class="card-image"></div>
         <div class="card-content">
             <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">맛집 리뷰</span></div>
@@ -361,7 +398,7 @@
             <p class="card-description">현장에서 스마트폰으로 즉시 고품질 원고를 완성합니다.</p>
         </div>
     </a>
-    <a href="https://park-jin-soo.github.io/food_smartphone/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/food_smartphone/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/food_smartphone/">
         <div class="card-image-wrapper"><img src="https://picsum.photos/seed/trend/600/400" alt="Trend" class="card-image"></div>
         <div class="card-content">
             <div class="badge-group"><span class="badge logo-allinone">ALL-IN-ONE</span><span class="badge badge-gray">🔥 실시간 트렌드</span></div>
@@ -370,7 +407,7 @@
         </div>
     </a>
 
-    <a href="https://park-jin-soo.github.io/IKEA_Posting/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/IKEA_Posting/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/IKEA_Posting/">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/ikea-p/600/400" class="card-image" alt="IKEA Posting">
         </div>
@@ -394,7 +431,7 @@
             <p class="card-description">가성비 다이소 꿀템 리뷰 전문 원고 생성 도구.</p>
         </div>
     </div>
-    <a href="https://park-jin-soo.github.io/Sports/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/Sports/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/Sports/">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/sports-p/600/400" class="card-image" alt="Sports News">
         </div>
@@ -407,7 +444,7 @@
             <p class="card-description">실시간 스포츠 경기 분석 및 이슈 원고 자동 제작.</p>
         </div>
     </a>
-    <a href="https://park-jin-soo.github.io/entertainment/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/entertainment/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/entertainment/">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/entertainment/600/400" class="card-image" alt="Entertainment News">
         </div>
@@ -420,7 +457,7 @@
             <p class="card-description">실시간 연예 뉴스 자동 수집 및 AI 원고 생성 도구입니다.</p>
         </div>
     </a>
-    <a href="https://park-jin-soo.github.io/kin_naver/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/kin_naver/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/kin_naver/">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/kin-interior/600/400" class="card-image" alt="Knowledge In Interior">
         </div>
@@ -433,7 +470,7 @@
             <p class="card-description">네이버 지식인 인테리어 질문 자동 수집 및 AI 원고 생성 도구입니다.</p>
         </div>
     </a>
-    <a href="https://park-jin-soo.github.io/beauty_salon/" class="card" target="_blank">
+    <a href="https://park-jin-soo.github.io/beauty_salon/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/beauty_salon/">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/beauty-salon/600/400" class="card-image" alt="Beauty Salon">
         </div>
@@ -490,6 +527,18 @@
     </div>
 </div>
 
+<!-- 인증 모달 -->
+<div id="authModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+        <h2>올인원 구독 아이디 인증</h2>
+        <p>관리자로부터 발급받은 아이디를 입력해야 올인원 구독 서비스에 접속할 수 있습니다.</p>
+        <input type="text" id="authUserId" placeholder="사용자 ID 입력" onkeypress="if(event.keyCode==13) checkAllinoneLicense()">
+        <button class="btn-login" id="btnLogin" onclick="checkAllinoneLicense()">인증하기</button>
+        <p id="authMsg"></p>
+    </div>
+</div>
+
 <script>
     // 올인원 카테고리 라이선스 설정 (silver50_70와 동일 구조 사용)
     const ALLINONE_DB_URL = "https://chaumi-license-manager-default-rtdb.firebaseio.com";
@@ -509,31 +558,61 @@
         alert("이 프로그램은 '방장에게 별도 문의'가 필요한 서비스입니다.\n우측 하단의 문의 버튼을 통해 상세 안내를 받으시기 바랍니다.");
     }
 
-    // 올인원 로그인 상태 초기화 (페이지 진입 시마다 실행)
-    function resetAllinoneLogin() {
-        const loginBox = document.getElementById('allinoneLogin');
-        const allinoneSection = document.getElementById('allinoneSection');
+    // 올인원 인증 상태 확인
+    function isAllinoneAuthenticated() {
+        const authData = localStorage.getItem('allinone_auth');
+        if (!authData) return false;
+        try {
+            const data = JSON.parse(authData);
+            const today = new Date().toISOString().split('T')[0];
+            return data.expiryDate && today <= data.expiryDate;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // 인증 모달 열기
+    let pendingUrl = null;
+    function openAuthModal(url) {
+        pendingUrl = url;
+        document.getElementById('authModal').classList.add('show');
+        document.getElementById('authUserId').focus();
+    }
+
+    // 인증 모달 닫기
+    function closeAuthModal() {
+        document.getElementById('authModal').classList.remove('show');
+        pendingUrl = null;
         const input = document.getElementById('authUserId');
         const msgEl = document.getElementById('authMsg');
-        const btn = document.getElementById('btnLogin');
-
-        if (loginBox && allinoneSection) {
-            loginBox.style.display = 'block';
-            allinoneSection.style.display = 'none';
-        }
         if (input) input.value = '';
         if (msgEl) {
             msgEl.textContent = '';
             msgEl.classList.remove('error', 'success');
         }
-        if (btn) btn.disabled = false;
     }
 
-    // 새로고침, 탭 재진입 시 항상 다시 로그인하도록 강제
-    window.addEventListener('load', resetAllinoneLogin);
-    window.addEventListener('pageshow', function(e) {
-        // bfcache 로 복원된 경우에도 초기화
-        if (e.persisted) resetAllinoneLogin();
+    // 올인원 카드 클릭 이벤트 처리
+    document.addEventListener('DOMContentLoaded', function() {
+        const allinoneCards = document.querySelectorAll('.allinone-card');
+        allinoneCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-allinone');
+                if (isAllinoneAuthenticated()) {
+                    window.open(url, '_blank');
+                } else {
+                    openAuthModal(url);
+                }
+            });
+        });
+
+        // 모달 배경 클릭 시 닫기
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
     });
 
     // 올인원 카테고리 라이선스 체크
@@ -560,10 +639,23 @@
             if (data && data.status === "사용가능") {
                 const today = new Date().toISOString().split('T')[0];
                 if (today <= data.expiryDate) {
-                    // 인증 성공: 로그인 박스 숨기고 올인원 섹션 노출
-                    document.getElementById('allinoneLogin').style.display = 'none';
-                    document.getElementById('allinoneSection').style.display = 'block';
-                    msgEl.textContent = "";
+                    // 인증 성공: 인증 정보 저장
+                    localStorage.setItem('allinone_auth', JSON.stringify({
+                        userId: userId,
+                        expiryDate: data.expiryDate
+                    }));
+                    
+                    msgEl.textContent = "✅ 인증 성공!";
+                    msgEl.classList.add('success');
+                    
+                    // 잠시 후 모달 닫고 링크로 이동
+                    setTimeout(() => {
+                        closeAuthModal();
+                        if (pendingUrl) {
+                            window.open(pendingUrl, '_blank');
+                            pendingUrl = null;
+                        }
+                    }, 500);
                 } else {
                     msgEl.textContent = `❌ 만료된 아이디입니다. (만료일: ${data.expiryDate})`;
                     msgEl.classList.add('error');
