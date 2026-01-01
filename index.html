@@ -558,17 +558,20 @@
         alert("이 프로그램은 '방장에게 별도 문의'가 필요한 서비스입니다.\n우측 하단의 문의 버튼을 통해 상세 안내를 받으시기 바랍니다.");
     }
 
-    // 올인원 인증 상태 확인
-    function isAllinoneAuthenticated() {
-        const authData = localStorage.getItem('allinone_auth');
-        if (!authData) return false;
-        try {
-            const data = JSON.parse(authData);
-            const today = new Date().toISOString().split('T')[0];
-            return data.expiryDate && today <= data.expiryDate;
-        } catch (e) {
-            return false;
+    // 페이지 로드 시 인증 상태 초기화 (새로고침 시마다 다시 로그인)
+    window.addEventListener('load', function() {
+        localStorage.removeItem('allinone_auth');
+    });
+    window.addEventListener('pageshow', function(e) {
+        // bfcache로 복원된 경우에도 초기화
+        if (e.persisted) {
+            localStorage.removeItem('allinone_auth');
         }
+    });
+
+    // 올인원 인증 상태 확인 (항상 false 반환 - 새로고침 시마다 재인증 필요)
+    function isAllinoneAuthenticated() {
+        return false;
     }
 
     // 인증 모달 열기
