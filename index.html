@@ -232,7 +232,7 @@
         #authMsg.success { color: #22c55e; }
         
         /* 인증 모달 스타일 */
-        #authModal {
+        #authModal, #premiumAuthModal {
             display: none;
             position: fixed;
             top: 0;
@@ -244,7 +244,7 @@
             justify-content: center;
             align-items: center;
         }
-        #authModal.show {
+        #authModal.show, #premiumAuthModal.show {
             display: flex;
         }
         .modal-content {
@@ -569,7 +569,7 @@
             <p class="card-description">스크랩, 댓글, 공감, 체류까지 원스톱 해결. 인기도 점수 상향에 최적화된 마케팅 툴입니다.</p>
         </div>
     </div>
-    <a href="https://naver.me/xE6kgXQt" class="card allinone-card" data-allinone="https://naver.me/xE6kgXQt">
+    <a href="https://naver.me/xE6kgXQt" class="card premium-card" data-premium="https://naver.me/xE6kgXQt">
         <div class="card-image-wrapper">
             <img src="https://picsum.photos/seed/cart-p/600/400" class="card-image" alt="Shopping Connect">
         </div>
@@ -582,7 +582,7 @@
     </div>
 </div>
 
-<!-- 인증 모달 -->
+<!-- 올인원 인증 모달 -->
 <div id="authModal">
     <div class="modal-content">
         <button class="modal-close" onclick="closeAuthModal()">&times;</button>
@@ -594,10 +594,26 @@
     </div>
 </div>
 
+<!-- 프리미엄 구독 인증 모달 -->
+<div id="premiumAuthModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closePremiumAuthModal()">&times;</button>
+        <h2>프리미엄 구독 아이디 인증</h2>
+        <p>관리자로부터 발급받은 아이디를 입력해야 프리미엄 구독 서비스에 접속할 수 있습니다.</p>
+        <input type="text" id="premiumAuthUserId" placeholder="사용자 ID 입력" onkeypress="if(event.keyCode==13) checkPremiumLicense()">
+        <button class="btn-login" id="btnPremiumLogin" onclick="checkPremiumLicense()">인증하기</button>
+        <p id="premiumAuthMsg"></p>
+    </div>
+</div>
+
 <script>
-    // 올인원 카테고리 라이선스 설정 (silver50_70와 동일 구조 사용)
+    // 올인원 카테고리 라이선스 설정
     const ALLINONE_DB_URL = "https://chaumi-license-manager-default-rtdb.firebaseio.com";
-    const ALLINONE_PROG_ID = "Program_01"; // 시니어 블로그 프로그램과 동일 ID 사용
+    const ALLINONE_PROG_ID = "Program_01"; // 올인원 구독자 관리
+    
+    // 프리미엄 구독 카테고리 라이선스 설정
+    const PREMIUM_DB_URL = "https://chaumi-license-manager-default-rtdb.firebaseio.com";
+    const PREMIUM_PROG_ID = "Program_02"; // 프리미엄 구독자 관리
 
     // 보안 기능: 우측 마우스 및 개발자 도구 차단
     document.addEventListener('contextmenu', e => e.preventDefault());
@@ -616,11 +632,13 @@
     // 페이지 로드 시 인증 상태 초기화 (새로고침 시마다 다시 로그인)
     window.addEventListener('load', function() {
         localStorage.removeItem('allinone_auth');
+        localStorage.removeItem('premium_auth');
     });
     window.addEventListener('pageshow', function(e) {
         // bfcache로 복원된 경우에도 초기화
         if (e.persisted) {
             localStorage.removeItem('allinone_auth');
+            localStorage.removeItem('premium_auth');
         }
     });
 
@@ -679,6 +697,27 @@
                 closeAuthModal();
             }
         });
+        
+        // 프리미엄 구독 카드 클릭 이벤트 처리
+        const premiumCards = document.querySelectorAll('.premium-card');
+        premiumCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('data-premium');
+                if (isPremiumAuthenticated()) {
+                    window.open(url, '_blank');
+                } else {
+                    openPremiumAuthModal(url);
+                }
+            });
+        });
+        
+        // 프리미엄 모달 배경 클릭 시 닫기
+        document.getElementById('premiumAuthModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePremiumAuthModal();
+            }
+        });
     });
 
     // 올인원 카테고리 라이선스 체크
@@ -721,6 +760,97 @@
                             window.open(urlToOpen, '_blank');
                         }
                         closeAuthModal();
+                    }, 500);
+                } else {
+                    msgEl.textContent = `❌ 만료된 아이디입니다. (만료일: ${data.expiryDate})`;
+                    msgEl.classList.add('error');
+                }
+            } else {
+                msgEl.textContent = "❌ 등록되지 않은 아이디거나 사용 정지 상태입니다.";
+                msgEl.classList.add('error');
+            }
+        } catch (e) {
+            msgEl.textContent = "❌ 서버 연결 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+            msgEl.classList.add('error');
+        }
+
+        btn.disabled = false;
+    }
+
+    // 프리미엄 구독 인증 상태 확인 (같은 세션 내에서는 인증 유지)
+    function isPremiumAuthenticated() {
+        const authData = localStorage.getItem('premium_auth');
+        if (!authData) return false;
+        try {
+            const data = JSON.parse(authData);
+            const today = new Date().toISOString().split('T')[0];
+            return data.expiryDate && today <= data.expiryDate;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // 프리미엄 인증 모달 열기
+    let pendingPremiumUrl = null;
+    function openPremiumAuthModal(url) {
+        pendingPremiumUrl = url;
+        document.getElementById('premiumAuthModal').classList.add('show');
+        document.getElementById('premiumAuthUserId').focus();
+    }
+
+    // 프리미엄 인증 모달 닫기
+    function closePremiumAuthModal() {
+        document.getElementById('premiumAuthModal').classList.remove('show');
+        pendingPremiumUrl = null;
+        const input = document.getElementById('premiumAuthUserId');
+        const msgEl = document.getElementById('premiumAuthMsg');
+        if (input) input.value = '';
+        if (msgEl) {
+            msgEl.textContent = '';
+            msgEl.classList.remove('error', 'success');
+        }
+    }
+
+    // 프리미엄 구독 카테고리 라이선스 체크
+    async function checkPremiumLicense() {
+        const userId = document.getElementById('premiumAuthUserId').value.trim();
+        const msgEl = document.getElementById('premiumAuthMsg');
+        const btn = document.getElementById('btnPremiumLogin');
+
+        msgEl.classList.remove('error', 'success');
+
+        if (!userId) {
+            msgEl.textContent = "아이디를 입력해주세요.";
+            msgEl.classList.add('error');
+            return;
+        }
+
+        btn.disabled = true;
+        msgEl.textContent = "⏳ 아이디 인증 확인 중입니다...";
+
+        try {
+            const response = await fetch(`${PREMIUM_DB_URL}/licenses/${PREMIUM_PROG_ID}/${userId}.json`);
+            const data = await response.json();
+
+            if (data && data.status === "사용가능") {
+                const today = new Date().toISOString().split('T')[0];
+                if (today <= data.expiryDate) {
+                    // 인증 성공: 인증 정보 저장
+                    localStorage.setItem('premium_auth', JSON.stringify({
+                        userId: userId,
+                        expiryDate: data.expiryDate
+                    }));
+                    
+                    msgEl.textContent = "✅ 인증 성공!";
+                    msgEl.classList.add('success');
+                    
+                    // 잠시 후 모달 닫고 링크로 이동
+                    const urlToOpen = pendingPremiumUrl; // URL을 먼저 저장
+                    setTimeout(() => {
+                        if (urlToOpen) {
+                            window.open(urlToOpen, '_blank');
+                        }
+                        closePremiumAuthModal();
                     }, 500);
                 } else {
                     msgEl.textContent = `❌ 만료된 아이디입니다. (만료일: ${data.expiryDate})`;
