@@ -169,7 +169,19 @@
         .badge-smartphone { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .badge-pc { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
         .badge-pc-only { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
-        .badge-recommended { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; font-weight: 800; }
+        .badge-recommended { 
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53); 
+            color: white; 
+            font-weight: 800; 
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4); }
+            50% { box-shadow: 0 3px 15px rgba(255, 107, 107, 0.7); }
+        }
         
         /* 업데이트 예정 카드 */
         .pending { opacity: 0.7; filter: grayscale(40%); cursor: default; }
@@ -429,6 +441,14 @@
             <p class="card-description">바로피트니스 동탄점 전용으로 블로그 포스팅 전용원고 생성기로 매장전용 블로그 마케팅용으로 사용됩니다.</p>
         </div>
     </a>
+    <a href="https://park-jin-soo.github.io/help_shopping/" class="card" target="_blank">
+        <div class="card-image-wrapper"><img src="https://picsum.photos/seed/shopping-help/600/400" alt="Shopping Connect" class="card-image"></div>
+        <div class="card-content">
+            <div class="badge-group"><span class="badge badge-recommended">✨ 적극 추천</span><span class="badge logo-free">100% 무료</span><span class="badge badge-gray">💰 수익 극대화</span></div>
+            <h2 class="card-title">쇼핑커넥트<br>수익 극대화 시스템</h2>
+            <p class="card-description">월별 트렌드 상품을 선점하고 전문가가 되어보세요</p>
+        </div>
+    </a>
 </div>
 
 <div class="section-header">
@@ -518,6 +538,7 @@
             </div>
             <h2 class="card-title">채우미 연예 원고 생성기</h2>
             <p class="card-description">실시간 연예 뉴스 자동 수집 및 AI 원고 생성 도구입니다.</p>
+    
         </div>
     </a>
     <a href="https://naver.me/F16y4Czp" class="card allinone-card" data-allinone="https://naver.me/F16y4Czp">
