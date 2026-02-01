@@ -179,6 +179,27 @@
             box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4);
             animation: pulse-glow 2s ease-in-out infinite;
         }
+        .badge-updated { 
+            background: linear-gradient(135deg, #10b981, #059669); 
+            color: white; 
+            font-weight: 800; 
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+        }
+        .update-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .update-date::before {
+            content: '🔄';
+            font-size: 0.85rem;
+        }
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4); }
             50% { box-shadow: 0 3px 15px rgba(255, 107, 107, 0.7); }
@@ -550,11 +571,13 @@
             <div class="badge-group">
                 <span class="badge logo-allinone">ALL-IN-ONE</span>
                 <span class="badge badge-recommended">✨ 추천</span>
+                <span class="badge badge-updated">🔄 업데이트</span>
                 <span class="badge badge-gray">연예,스포츠 전용</span>
                 <span class="badge badge-pc">💻 PC 프로그램 설치용</span>
             </div>
             <h2 class="card-title">채우미 연예/스포츠 뉴스<br>다계정 포스팅 발행기</h2>
             <p class="card-description">실시간으로 올라오는 연예뉴스 랭킹순위에 새로운기사가 올라올 때마다 즉시 포스팅발행 을 하여 방문자조회수를 올릴수 있습니다</p>
+            <div class="update-date">업데이트: 2025.01.30</div>
         </div>
     </a>
     <a href="https://park-jin-soo.github.io/kin_naver/" class="card allinone-card" data-allinone="https://park-jin-soo.github.io/kin_naver/">
